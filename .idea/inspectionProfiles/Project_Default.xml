@@ -1,0 +1,35 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="22">
+            <item index="0" class="java.lang.String" itemvalue="tiktoken" />
+            <item index="1" class="java.lang.String" itemvalue="paddlefsl" />
+            <item index="2" class="java.lang.String" itemvalue="typer" />
+            <item index="3" class="java.lang.String" itemvalue="colorlog" />
+            <item index="4" class="java.lang.String" itemvalue="ml_dtypes" />
+            <item index="5" class="java.lang.String" itemvalue="rich" />
+            <item index="6" class="java.lang.String" itemvalue="blobfile" />
+            <item index="7" class="java.lang.String" itemvalue="dill" />
+            <item index="8" class="java.lang.String" itemvalue="datasets" />
+            <item index="9" class="java.lang.String" itemvalue="omegaconf" />
+            <item index="10" class="java.lang.String" itemvalue="fastapi" />
+            <item index="11" class="java.lang.String" itemvalue="paddle2onnx" />
+            <item index="12" class="java.lang.String" itemvalue="seqeval" />
+            <item index="13" class="java.lang.String" itemvalue="sentencepiece" />
+            <item index="14" class="java.lang.String" itemvalue="safetensors" />
+            <item index="15" class="java.lang.String" itemvalue="multiprocess" />
+            <item index="16" class="java.lang.String" itemvalue="uvicorn" />
+            <item index="17" class="java.lang.String" itemvalue="visualdl" />
+            <item index="18" class="java.lang.String" itemvalue="onnx" />
+            <item index="19" class="java.lang.String" itemvalue="huggingface_hub" />
+            <item index="20" class="java.lang.String" itemvalue="Flask-Babel" />
+            <item index="21" class="java.lang.String" itemvalue="aistudio-sdk" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
