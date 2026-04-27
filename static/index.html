@@ -3,201 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自然语言处理课程聊天助手</title>
+    <title>双AI问答助手</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-        
-        body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
-        
-        .chat-container {
-            width: 100%;
-            max-width: 600px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .chat-header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .chat-messages {
-            height: 400px;
-            overflow-y: auto;
+        body {
+            background: #f5f7fa;
             padding: 20px;
         }
-        
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-        }
-        
-        .user-message {
-            background-color: #E3F2FD;
-            border-radius: 18px 18px 4px 18px;
-            padding: 10px 15px;
-            margin-left: auto;
-        }
-        
-        .bot-message {
-            background-color: #F1F1F1;
-            border-radius: 18px 18px 18px 4px;
-            padding: 10px 15px;
-        }
-        
-        .message-content {
-            word-wrap: break-word;
-        }
-        
-        .chat-input {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            padding: 10px;
-            border-top: 1px solid #E0E0E0;
+            gap: 20px;
         }
-        
-        .chat-input input {
+        .box {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #E0E0E0;
-            border-radius: 20px;
-            margin-right: 10px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
-        
-        .chat-input button {
-            background-color: #4CAF50;
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .answer-box {
+            height: 350px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background: #fafbfc;
+            white-space: pre-wrap;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        button {
+            padding: 12px 20px;
+            background: #007bff;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
-        
-        .chat-input button:hover {
-            background-color: #45a049;
+        button:hover {
+            background: #0066cc;
         }
-        
         .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0,0,0,0.1);
-            border-radius: 50%;
-            border-top-color: #4CAF50;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            color: #666;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">自然语言处理课程聊天助手</div>
-        <div class="chat-messages" id="chat-messages">
-            <div class="message bot-message">
-                <div class="message-content">你好！我是自然语言处理课程的助教，有什么可以帮助你的吗？</div>
+    <div class="container">
+        <!-- 左侧：千问 NLP 助教 -->
+        <div class="box">
+            <div class="title">千问 NLP 助教</div>
+            <div id="answer1" class="answer-box">请输入问题...</div>
+            <div class="input-row">
+                <input id="msg1" placeholder="输入你的问题..." type="text">
+                <button onclick="sendToQwen()">发送</button>
             </div>
         </div>
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="请输入消息...">
-            <button id="send-button">➤</button>
+
+        <!-- 右侧：FastGPT Agent -->
+        <div class="box">
+            <div class="title">FastGPT Agent 助手</div>
+            <div id="answer2" class="answer-box">请输入问题...</div>
+            <div class="input-row">
+                <input id="msg2" placeholder="输入你的问题..." type="text">
+                <button onclick="sendToFastGPT()">发送</button>
+            </div>
         </div>
     </div>
-    
+
     <script>
-        const chatMessages = document.getElementById('chat-messages');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        
-        function addMessage(content, isUser) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = isUser ? 'message user-message' : 'message bot-message';
-            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        function addLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message bot-message';
-            loadingDiv.id = 'loading';
-            loadingDiv.innerHTML = `<div class="message-content"><div class="loading"></div></div>`;
-            chatMessages.appendChild(loadingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        function removeLoading() {
-            const loadingDiv = document.getElementById('loading');
-            if (loadingDiv) {
-                loadingDiv.remove();
-            }
-        }
-        
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message) return;
-            
-            // 添加用户消息
-            addMessage(message, true);
-            messageInput.value = '';
-            
-            // 显示加载状态
-            addLoading();
-            
+        // 发送给千问 /chat
+        async function sendToQwen() {
+            const msg = document.getElementById('msg1').value.trim();
+            if (!msg) return;
+            const dom = document.getElementById('answer1');
+            dom.innerText = "正在思考...";
+
             try {
-                const response = await fetch('/chat', {
+                const res = await fetch('/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
                 });
-                
-                const data = await response.json();
-                removeLoading();
-                
-                if (data.error) {
-                    addMessage(`错误：${data.error}`, false);
-                } else {
-                    addMessage(data.answer, false);
-                }
-            } catch (error) {
-                removeLoading();
-                addMessage(`错误：${error.message}`, false);
+                const data = await res.json();
+                dom.innerText = data.answer || data.error || '请求失败';
+            } catch (e) {
+                dom.innerText = '请求出错：' + e.message;
             }
         }
-        
-        // 发送按钮点击事件
-        sendButton.addEventListener('click', sendMessage);
-        
-        // 回车键发送
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+
+        // 发送给 FastGPT /fastgpt
+        async function sendToFastGPT() {
+            const msg = document.getElementById('msg2').value.trim();
+            if (!msg) return;
+            const dom = document.getElementById('answer2');
+            dom.innerText = "正在思考...";
+
+            try {
+                const res = await fetch('/fastgpt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await res.json();
+                dom.innerText = data.answer || data.error || '请求失败';
+            } catch (e) {
+                dom.innerText = '请求出错：' + e.message;
             }
-        });
+        }
     </script>
 </body>
 </html>
